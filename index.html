@@ -13,7 +13,14 @@
             <p class="subtitle">Compare two YAML matrices and visualize the differences</p>
         </header>
 
-        <section class="upload-section">
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" id="matrixTab" data-tab="matrix">Matrix Diff</button>
+            <button class="tab-btn" id="dfgTab" data-tab="dfg">DFG Analysis</button>
+        </div>
+
+        <!-- Matrix Upload Section -->
+        <section class="upload-section" id="matrixUploadSection">
             <div class="upload-container">
                 <div class="file-input-wrapper">
                     <label for="file1">Matrix 1 (Before)</label>
@@ -27,6 +34,23 @@
                 </div>
             </div>
             <button id="compareBtn" class="compare-btn" disabled>Compare Matrices</button>
+        </section>
+
+        <!-- XES Upload Section -->
+        <section class="upload-section" id="xesUploadSection" style="display: none;">
+            <div class="upload-container">
+                <div class="file-input-wrapper">
+                    <label for="xesFile1">Event Log 1</label>
+                    <input type="file" id="xesFile1" accept=".xes" />
+                    <span class="filename" id="xesFilename1">No file selected</span>
+                </div>
+                <div class="file-input-wrapper">
+                    <label for="xesFile2">Event Log 2</label>
+                    <input type="file" id="xesFile2" accept=".xes" />
+                    <span class="filename" id="xesFilename2">No file selected</span>
+                </div>
+            </div>
+            <button id="analyzeBtn" class="compare-btn" disabled>Analyze DFGs</button>
         </section>
 
         <section class="stats-legend-section" id="statsLegendSection" style="display: none;">
@@ -91,6 +115,64 @@
             <div class="error-message" id="errorMessage"></div>
         </section>
 
+        <!-- DFG Statistics Section -->
+        <section class="dfg-stats-section" id="dfgStatsSection" style="display: none;">
+            <div class="dfg-stats-container">
+                <div class="dfg-stat-box">
+                    <h3>Event Log 1</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Activities:</span>
+                        <span class="stat-value" id="dfgActivities1">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Paths:</span>
+                        <span class="stat-value" id="dfgPaths1">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Start Activities:</span>
+                        <span class="stat-value" id="dfgStarts1">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">End Activities:</span>
+                        <span class="stat-value" id="dfgEnds1">0</span>
+                    </div>
+                </div>
+                <div class="dfg-stat-box">
+                    <h3>Event Log 2</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Activities:</span>
+                        <span class="stat-value" id="dfgActivities2">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Paths:</span>
+                        <span class="stat-value" id="dfgPaths2">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Start Activities:</span>
+                        <span class="stat-value" id="dfgStarts2">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">End Activities:</span>
+                        <span class="stat-value" id="dfgEnds2">0</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DFG Visualization Section -->
+        <section class="dfg-section" id="dfgSection" style="display: none;">
+            <div class="dfg-container">
+                <div class="dfg-panel">
+                    <h2>Event Log 1 - DFG</h2>
+                    <div class="dfg-visualization" id="dfgViz1"></div>
+                </div>
+                <div class="dfg-panel">
+                    <h2>Event Log 2 - DFG</h2>
+                    <div class="dfg-visualization" id="dfgViz2"></div>
+                </div>
+            </div>
+        </section>
+
         <section class="matrix-section" id="matrixSection" style="display: none;">
             <div class="matrix-header">
                 <h2 id="matrixTitle">Matrix 1 (Before)</h2>
@@ -107,13 +189,22 @@
         </section>
     </div>
 
-    <!-- Include js-yaml library from CDN -->
+    <!-- Include external libraries from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module">
+        import * as Viz from "https://cdn.jsdelivr.net/npm/@viz-js/viz@3.7.0/+esm";
+        window.Viz = Viz;
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/pm4js/pm4js-core@master/dist/pm4js_latest.js"></script>
 
     <!-- Application scripts -->
     <script src="yaml-parser.js"></script>
     <script src="diff-engine.js"></script>
     <script src="matrix-renderer.js"></script>
+    <script src="xes-parser.js"></script>
+    <script src="dfg-generator.js"></script>
+    <script src="dfg-renderer.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
