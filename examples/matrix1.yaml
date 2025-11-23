@@ -1,9 +1,21 @@
 metadata:
   format_version: "1.0"
   description: "Process adjacency matrix - initial version"
-  activities: ['Outcome: Success', 'Outcome: Fail', 'Checking case_NumberOfTerms', 'Checking case_RequestedAmount', 'Approval Decision']
+  activities: ['Outcome: Success', 'Outcome: Fail', 'Checking case_NumberOfTerms', 'Checking case_RequestedAmount', 'Approval Decision', 'Final Review']
 
 dependencies:
+  # Dependencies from 'Outcome: Success' to all other activities
+  - from: 'Outcome: Success'
+    to: 'Outcome: Fail'
+    temporal:
+      type: eventual
+      symbol: ≻t
+      direction: forward
+    existential:
+      type: nand
+      symbol: ⊼
+      direction: both
+
   - from: 'Outcome: Success'
     to: Checking case_NumberOfTerms
     temporal:
@@ -27,11 +39,105 @@ dependencies:
       direction: forward
 
   - from: 'Outcome: Success'
-    to: 'Outcome: Fail'
+    to: 'Approval Decision'
+    temporal:
+      type: possible
+      symbol: ◇t
+      direction: forward
+    existential:
+      type: disjunction
+      symbol: ∨
+      direction: forward
+
+  - from: 'Outcome: Success'
+    to: 'Final Review'
+    temporal:
+      type: always
+      symbol: □t
+      direction: backward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
+
+  # Dependencies from 'Outcome: Fail' to all other activities
+  - from: 'Outcome: Fail'
+    to: 'Outcome: Success'
+    temporal:
+      type: always
+      symbol: □t
+      direction: forward
     existential:
       type: nand
       symbol: ⊼
       direction: both
+
+  - from: 'Outcome: Fail'
+    to: Checking case_NumberOfTerms
+    temporal:
+      type: eventual
+      symbol: ≻t
+      direction: backward
+    existential:
+      type: disjunction
+      symbol: ∨
+      direction: forward
+
+  - from: 'Outcome: Fail'
+    to: Checking case_RequestedAmount
+    temporal:
+      type: eventual
+      symbol: ≻t
+      direction: backward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
+
+  - from: 'Outcome: Fail'
+    to: 'Approval Decision'
+    temporal:
+      type: always
+      symbol: □t
+      direction: backward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
+
+  - from: 'Outcome: Fail'
+    to: 'Final Review'
+    temporal:
+      type: possible
+      symbol: ◇t
+      direction: backward
+    existential:
+      type: disjunction
+      symbol: ∨
+      direction: forward
+
+  # Dependencies from Checking case_NumberOfTerms to all other activities
+  - from: Checking case_NumberOfTerms
+    to: 'Outcome: Success'
+    temporal:
+      type: eventual
+      symbol: ≻t
+      direction: forward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
+
+  - from: Checking case_NumberOfTerms
+    to: 'Outcome: Fail'
+    temporal:
+      type: possible
+      symbol: ◇t
+      direction: forward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
 
   - from: Checking case_NumberOfTerms
     to: Checking case_RequestedAmount
@@ -44,7 +150,86 @@ dependencies:
       symbol: =>
       direction: forward
 
-  - from: Approval Decision
+  - from: Checking case_NumberOfTerms
+    to: 'Approval Decision'
+    temporal:
+      type: eventual
+      symbol: ≻t
+      direction: backward
+    existential:
+      type: disjunction
+      symbol: ∨
+      direction: forward
+
+  - from: Checking case_NumberOfTerms
+    to: 'Final Review'
+    temporal:
+      type: possible
+      symbol: ◇t
+      direction: backward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
+
+  # Dependencies from Checking case_RequestedAmount to all other activities
+  - from: Checking case_RequestedAmount
+    to: 'Outcome: Success'
+    temporal:
+      type: eventual
+      symbol: ≻t
+      direction: forward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
+
+  - from: Checking case_RequestedAmount
+    to: 'Outcome: Fail'
+    temporal:
+      type: eventual
+      symbol: ≻t
+      direction: forward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
+
+  - from: Checking case_RequestedAmount
+    to: Checking case_NumberOfTerms
+    temporal:
+      type: possible
+      symbol: ◇t
+      direction: forward
+    existential:
+      type: disjunction
+      symbol: ∨
+      direction: forward
+
+  - from: Checking case_RequestedAmount
+    to: 'Approval Decision'
+    temporal:
+      type: eventual
+      symbol: ≻t
+      direction: backward
+    existential:
+      type: equivalence
+      symbol: <=>
+      direction: both
+
+  - from: Checking case_RequestedAmount
+    to: 'Final Review'
+    temporal:
+      type: always
+      symbol: □t
+      direction: backward
+    existential:
+      type: disjunction
+      symbol: ∨
+      direction: forward
+
+  # Dependencies from Approval Decision to all other activities
+  - from: 'Approval Decision'
     to: 'Outcome: Success'
     temporal:
       type: always
@@ -54,3 +239,103 @@ dependencies:
       type: equivalence
       symbol: <=>
       direction: both
+
+  - from: 'Approval Decision'
+    to: 'Outcome: Fail'
+    temporal:
+      type: always
+      symbol: □t
+      direction: backward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
+
+  - from: 'Approval Decision'
+    to: Checking case_NumberOfTerms
+    temporal:
+      type: eventual
+      symbol: ≻t
+      direction: forward
+    existential:
+      type: disjunction
+      symbol: ∨
+      direction: forward
+
+  - from: 'Approval Decision'
+    to: Checking case_RequestedAmount
+    temporal:
+      type: eventual
+      symbol: ≻t
+      direction: forward
+    existential:
+      type: equivalence
+      symbol: <=>
+      direction: both
+
+  - from: 'Approval Decision'
+    to: 'Final Review'
+    temporal:
+      type: possible
+      symbol: ◇t
+      direction: backward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
+
+  # Dependencies from Final Review to all other activities
+  - from: 'Final Review'
+    to: 'Outcome: Success'
+    temporal:
+      type: always
+      symbol: □t
+      direction: forward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
+
+  - from: 'Final Review'
+    to: 'Outcome: Fail'
+    temporal:
+      type: possible
+      symbol: ◇t
+      direction: forward
+    existential:
+      type: disjunction
+      symbol: ∨
+      direction: forward
+
+  - from: 'Final Review'
+    to: Checking case_NumberOfTerms
+    temporal:
+      type: eventual
+      symbol: ≻t
+      direction: forward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward
+
+  - from: 'Final Review'
+    to: Checking case_RequestedAmount
+    temporal:
+      type: always
+      symbol: □t
+      direction: forward
+    existential:
+      type: disjunction
+      symbol: ∨
+      direction: forward
+
+  - from: 'Final Review'
+    to: 'Approval Decision'
+    temporal:
+      type: possible
+      symbol: ◇t
+      direction: forward
+    existential:
+      type: implication
+      symbol: =>
+      direction: forward

@@ -124,7 +124,7 @@ class MatrixRenderer {
     }
 
     /**
-     * Render cell content with symbols (only show what changed)
+     * Render cell content with symbols (show all dependencies)
      * @param {Object} cellData - Cell data
      * @param {string} changeType - Type of change
      * @returns {string} HTML string for cell content
@@ -132,22 +132,12 @@ class MatrixRenderer {
     static renderCellContent(cellData, changeType) {
         const parts = [];
 
-        // Determine what to show based on change type
-        const showTemporal = changeType === DiffEngine.CHANGE_TYPES.TEMPORAL_ONLY ||
-                            changeType === DiffEngine.CHANGE_TYPES.BOTH ||
-                            changeType === DiffEngine.CHANGE_TYPES.ADDED ||
-                            changeType === DiffEngine.CHANGE_TYPES.REMOVED;
-
-        const showExistential = changeType === DiffEngine.CHANGE_TYPES.EXISTENTIAL_ONLY ||
-                               changeType === DiffEngine.CHANGE_TYPES.BOTH ||
-                               changeType === DiffEngine.CHANGE_TYPES.ADDED ||
-                               changeType === DiffEngine.CHANGE_TYPES.REMOVED;
-
-        if (showTemporal && cellData.temporal && cellData.temporal.symbol) {
+        // Always show both temporal and existential if they exist
+        if (cellData.temporal && cellData.temporal.symbol) {
             parts.push(`<span class="symbol-temporal">${this.escapeHtml(cellData.temporal.symbol)}</span>`);
         }
 
-        if (showExistential && cellData.existential && cellData.existential.symbol) {
+        if (cellData.existential && cellData.existential.symbol) {
             parts.push(`<span class="symbol-existential">${this.escapeHtml(cellData.existential.symbol)}</span>`);
         }
 
@@ -155,7 +145,7 @@ class MatrixRenderer {
             return '<span style="color: #71717a;">-</span>';
         }
 
-        return `<div class="symbol-display">${parts.join('')}</div>`;
+        return `<div class="symbol-display">${parts.join(', ')}</div>`;
     }
 
     /**
