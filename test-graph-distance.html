@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Distance Calculator Test</title>
+</head>
+<body>
+    <h1>Graph Distance Calculator Test</h1>
+    <div id="results"></div>
+
+    <!-- Include external libraries from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module">
+        import * as Viz from "https://cdn.jsdelivr.net/npm/@viz-js/viz@3.7.0/+esm";
+        window.Viz = Viz;
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/pm4js/pm4js-core@master/dist/pm4js_latest.js"></script>
+
+    <!-- Application scripts -->
+    <script src="graph-distance-calculator.js"></script>
+    
+    <script>
+        // Test the graph distance calculator with example DFGs
+        document.addEventListener('DOMContentLoaded', () => {
+            const resultsDiv = document.getElementById('results');
+            
+            // Example DFGs for testing
+            const dfg1 = {
+                pathsFrequency: {
+                    'A>B': 10,
+                    'B>C': 8,
+                    'C>D': 5
+                }
+            };
+            
+            const dfg2 = {
+                pathsFrequency: {
+                    'A>B': 12,
+                    'B>C': 6,
+                    'C>D': 5
+                }
+            };
+            
+            // Test with different DFGs
+            const dfg3 = {
+                pathsFrequency: {
+                    'A>B': 5,
+                    'B>C': 4,
+                    'C>D': 3
+                }
+            };
+            
+            const dfg4 = {
+                pathsFrequency: {
+                    'D>E': 5,
+                    'E>F': 4
+                }
+            };
+            
+            try {
+                // Calculate distances
+                const distance1 = GraphDistanceCalculator.calculateDistance(dfg1, dfg2);
+                const similarity1 = GraphDistanceCalculator.calculateSimilarityPercentage(dfg1, dfg2);
+                
+                const distance2 = GraphDistanceCalculator.calculateDistance(dfg3, dfg4);
+                const similarity2 = GraphDistanceCalculator.calculateSimilarityPercentage(dfg3, dfg4);
+                
+                const distance3 = GraphDistanceCalculator.calculateDistance(dfg1, dfg1); // Same DFGs should have distance 0
+                const similarity3 = GraphDistanceCalculator.calculateSimilarityPercentage(dfg1, dfg1);
+                
+                // Display results
+                resultsDiv.innerHTML = `
+                    <h2>Test Results:</h2>
+                    <p><strong>DFG1 vs DFG2:</strong> Distance = ${distance1.toFixed(4)}, Similarity = ${similarity1.toFixed(2)}%</p>
+                    <p>DFG1 paths: ${JSON.stringify(dfg1.pathsFrequency)}</p>
+                    <p>DFG2 paths: ${JSON.stringify(dfg2.pathsFrequency)}</p>
+                    <br>
+                    <p><strong>DFG3 vs DFG4 (completely different):</strong> Distance = ${distance2.toFixed(4)}, Similarity = ${similarity2.toFixed(2)}%</p>
+                    <p>DFG3 paths: ${JSON.stringify(dfg3.pathsFrequency)}</p>
+                    <p>DFG4 paths: ${JSON.stringify(dfg4.pathsFrequency)}</p>
+                    <br>
+                    <p><strong>DFG1 vs DFG1 (identical):</strong> Distance = ${distance3.toFixed(4)}, Similarity = ${similarity3.toFixed(2)}%</p>
+                    <p>Expected: Distance = 0, Similarity = 100%</p>
+                `;
+                
+                console.log('Graph distance calculation tests completed successfully');
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+                console.error('Error in graph distance calculation test:', error);
+            }
+            
+            // Display detailed comparison for DFG1 vs DFG2
+            try {
+                const detail = GraphDistanceCalculator.getDetailedComparison(dfg1, dfg2);
+                console.log('Detailed comparison:', detail);
+                
+                const detailDiv = document.createElement('div');
+                detailDiv.innerHTML = `
+                    <h3>Detailed Comparison (DFG1 vs DFG2):</h3>
+                    <p>Total Weight DFG1: ${detail.totalWeight1}, Total Weight DFG2: ${detail.totalWeight2}</p>
+                    <p>Max Diff Ratio 1: ${detail.maxDiffRatio1.toFixed(4)}, Max Diff Ratio 2: ${detail.maxDiffRatio2.toFixed(4)}</p>
+                    <p>Path differences:</p>
+                    <ul>
+                        ${detail.differences.map(d => 
+                            `<li>${d.path}: DFG1=${d.weight1}, DFG2=${d.weight2}, Diff=${d.absoluteDiff}</li>`
+                        ).join('')}
+                    </ul>
+                `;
+                resultsDiv.appendChild(detailDiv);
+            } catch (error) {
+                console.error('Error in detailed comparison:', error);
+            }
+        });
+    </script>
+</body>
+</html>

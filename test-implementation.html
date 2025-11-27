@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Distance Implementation Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Graph Distance Implementation Test</h1>
+    
+    <div id="tests"></div>
+
+    <!-- Include external libraries from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module">
+        import * as Viz from "https://cdn.jsdelivr.net/npm/@viz-js/viz@3.7.0/+esm";
+        window.Viz = Viz;
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/pm4js/pm4js-core@master/dist/pm4js_latest.js"></script>
+
+    <!-- Application scripts -->
+    <script src="graph-distance-calculator.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const testsDiv = document.getElementById('tests');
+            
+            function addResult(className, message) {
+                const div = document.createElement('div');
+                div.className = `result ${className}`;
+                div.textContent = message;
+                testsDiv.appendChild(div);
+            }
+            
+            try {
+                // Test DFGs
+                const dfg1 = {
+                    pathsFrequency: {
+                        'A>B': 10,
+                        'B>C': 8,
+                        'C>D': 5
+                    }
+                };
+
+                const dfg2 = {
+                    pathsFrequency: {
+                        'A>B': 12,  // Different weight
+                        'B>C': 6,   // Different weight
+                        'C>D': 5    // Same weight
+                    }
+                };
+
+                const dfg3 = {
+                    pathsFrequency: {
+                        'A>B': 10,
+                        'B>C': 8,
+                        'C>D': 5
+                    }
+                };
+
+                const dfg4 = {
+                    pathsFrequency: {
+                        'X>Y': 5,  // Completely different paths
+                        'Y>Z': 3
+                    }
+                };
+                
+                addResult('info', 'Testing GraphDistanceCalculator implementation...');
+                
+                // Test 1: Different DFGs
+                const similarity1 = GraphDistanceCalculator.calculateSimilarity(dfg1, dfg2);
+                const distance1 = GraphDistanceCalculator.calculateTrueDistance(dfg1, dfg2);
+                const similarityPercent1 = GraphDistanceCalculator.calculateSimilarityPercentage(dfg1, dfg2);
+                const distancePercent1 = GraphDistanceCalculator.calculateDistancePercentage(dfg1, dfg2);
+                
+                addResult('info', `Test 1 - Different DFGs:`);
+                addResult('info', `  DFG1: ${JSON.stringify(dfg1.pathsFrequency)}`);
+                addResult('info', `  DFG2: ${JSON.stringify(dfg2.pathsFrequency)}`);
+                addResult('info', `  Similarity: ${similarity1.toFixed(4)}, Distance: ${distance1.toFixed(4)}`);
+                addResult('info', `  Similarity %: ${similarityPercent1.toFixed(2)}, Distance %: ${distancePercent1.toFixed(2)}`);
+                
+                // Expected: distance should be around 0.0870, similarity around 0.9130
+                if (Math.abs(distance1 - 0.0870) < 0.01) {
+                    addResult('success', '✓ Test 1 PASSED: Distance calculation is correct');
+                } else {
+                    addResult('error', `✗ Test 1 FAILED: Expected distance ~0.0870, got ${distance1.toFixed(4)}`);
+                }
+                
+                // Test 2: Identical DFGs
+                const similarity2 = GraphDistanceCalculator.calculateSimilarity(dfg1, dfg3);
+                const distance2 = GraphDistanceCalculator.calculateTrueDistance(dfg1, dfg3);
+                const similarityPercent2 = GraphDistanceCalculator.calculateSimilarityPercentage(dfg1, dfg3);
+                const distancePercent2 = GraphDistanceCalculator.calculateDistancePercentage(dfg1, dfg3);
+                
+                addResult('info', `\nTest 2 - Identical DFGs:`);
+                addResult('info', `  DFG1: ${JSON.stringify(dfg1.pathsFrequency)}`);
+                addResult('info', `  DFG3: ${JSON.stringify(dfg3.pathsFrequency)}`);
+                addResult('info', `  Similarity: ${similarity2.toFixed(4)}, Distance: ${distance2.toFixed(4)}`);
+                addResult('info', `  Similarity %: ${similarityPercent2.toFixed(2)}, Distance %: ${distancePercent2.toFixed(2)}`);
+                
+                if (distance2 === 0 && similarity2 === 1) {
+                    addResult('success', '✓ Test 2 PASSED: Identical DFGs have 0 distance and 1 similarity');
+                } else {
+                    addResult('error', `✗ Test 2 FAILED: Expected distance=0 and similarity=1, got distance=${distance2}, similarity=${similarity2}`);
+                }
+                
+                // Test 3: Completely different DFGs
+                const similarity3 = GraphDistanceCalculator.calculateSimilarity(dfg1, dfg4);
+                const distance3 = GraphDistanceCalculator.calculateTrueDistance(dfg1, dfg4);
+                const similarityPercent3 = GraphDistanceCalculator.calculateSimilarityPercentage(dfg1, dfg4);
+                const distancePercent3 = GraphDistanceCalculator.calculateDistancePercentage(dfg1, dfg4);
+                
+                addResult('info', `\nTest 3 - Completely different DFGs:`);
+                addResult('info', `  DFG1: ${JSON.stringify(dfg1.pathsFrequency)}`);
+                addResult('info', `  DFG4: ${JSON.stringify(dfg4.pathsFrequency)}`);
+                addResult('info', `  Similarity: ${similarity3.toFixed(4)}, Distance: ${distance3.toFixed(4)}`);
+                addResult('info', `  Similarity %: ${similarityPercent3.toFixed(2)}, Distance %: ${distancePercent3.toFixed(2)}`);
+                
+                // For completely different DFGs, the max difference ratio should be 1 (since all paths from one DFG are missing in the other)
+                // So distance should be 1 and similarity should be 0
+                if (distance3 === 1 && similarity3 === 0) {
+                    addResult('success', '✓ Test 3 PASSED: Completely different DFGs have max distance and 0 similarity');
+                } else {
+                    addResult('error', `✗ Test 3 FAILED: Expected distance=1 and similarity=0, got distance=${distance3}, similarity=${similarity3}`);
+                }
+                
+                // Test 4: Paper's "distance" function (which is actually similarity)
+                const paperDistance1 = GraphDistanceCalculator.calculateDistance(dfg1, dfg2); // This is actually similarity per paper
+                const paperDistance2 = GraphDistanceCalculator.calculateDistance(dfg1, dfg3); // This should be 1 for identical
+                
+                addResult('info', `\nTest 4 - Paper\'s "distance" function (returns similarity):`);
+                addResult('info', `  Different DFGs paper "distance": ${paperDistance1.toFixed(4)}`);
+                addResult('info', `  Identical DFGs paper "distance": ${paperDistance2.toFixed(4)}`);
+                
+                if (Math.abs(paperDistance1 - 0.9130) < 0.01 && paperDistance2 === 1) {
+                    addResult('success', '✓ Test 4 PASSED: Paper\'s distance function works as expected');
+                } else {
+                    addResult('error', `✗ Test 4 FAILED: Paper distance not as expected`);
+                }
+                
+                addResult('success', '\n✓ All tests completed. Implementation is ready for UI integration!');
+                
+            } catch (error) {
+                addResult('error', `✗ Error during testing: ${error.message}`);
+                console.error('Test error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

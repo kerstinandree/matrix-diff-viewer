@@ -220,7 +220,7 @@ class MatrixDiffApp {
             this.dfgResult2 = DfgGenerator.generateComplete(this.eventLog2);
 
             // Display statistics
-            this.displayDfgStatistics(this.dfgResult1.stats, this.dfgResult2.stats);
+            this.displayDfgStatistics(this.dfgResult1.stats, this.dfgResult2.stats, this.dfgResult1.dfg, this.dfgResult2.dfg);
 
             // Render DFG visualizations
             console.log('Rendering DFG visualizations...');
@@ -249,8 +249,10 @@ class MatrixDiffApp {
      * Display DFG statistics
      * @param {Object} stats1 - Statistics for DFG 1
      * @param {Object} stats2 - Statistics for DFG 2
+     * @param {Object} dfg1 - First DFG object
+     * @param {Object} dfg2 - Second DFG object
      */
-    displayDfgStatistics(stats1, stats2) {
+    displayDfgStatistics(stats1, stats2, dfg1, dfg2) {
         // Event Log 1 stats
         document.getElementById('dfgActivities1').textContent = stats1.activityCount;
         document.getElementById('dfgPaths1').textContent = stats1.pathCount;
@@ -262,6 +264,25 @@ class MatrixDiffApp {
         document.getElementById('dfgPaths2').textContent = stats2.pathCount;
         document.getElementById('dfgStarts2').textContent = stats2.startActivityCount;
         document.getElementById('dfgEnds2').textContent = stats2.endActivityCount;
+
+        // Calculate and display graph distance
+        if (dfg1 && dfg2) {
+            try {
+                const similarityScore = GraphDistanceCalculator.calculateDistance(dfg1, dfg2); // Paper's definition (higher = more similar)
+                const distance = GraphDistanceCalculator.calculateTrueDistance(dfg1, dfg2); // Intuitive distance (0 = identical)
+                const similarity = GraphDistanceCalculator.calculateSimilarityPercentage(dfg1, dfg2); // Similarity percentage
+
+                document.getElementById('graphDistance').textContent = distance.toFixed(2);
+                document.getElementById('graphSimilarity').textContent = similarity.toFixed(2);
+            } catch (error) {
+                console.error('Error calculating graph distance:', error);
+                document.getElementById('graphDistance').textContent = 'Error';
+                document.getElementById('graphSimilarity').textContent = 'Error';
+            }
+        } else {
+            document.getElementById('graphDistance').textContent = '0.00';
+            document.getElementById('graphSimilarity').textContent = '100.00';
+        }
     }
 
     /**
