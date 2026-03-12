@@ -44,8 +44,7 @@ function calculateSimilarity(dfg1, dfg2) {
     console.log(`Total weight DFG1: ${totalWeight1}, Total weight DFG2: ${totalWeight2}`);
 
     // Calculate maximum difference ratios
-    let maxDiffRatio1 = 0; // Max |w1 - w2| / sum(w1)
-    let maxDiffRatio2 = 0; // Max |w1 - w2| / sum(w2)
+    let sumMaxDiff = 0;
 
     for (const path of allPaths) {
         const weight1 = dfg1.pathsFrequency[path] || 0;
@@ -56,22 +55,19 @@ function calculateSimilarity(dfg1, dfg2) {
 
         if (totalWeight1 > 0) {
             const ratio1 = absoluteDiff / totalWeight1;
-            maxDiffRatio1 = Math.max(maxDiffRatio1, ratio1);
             console.log(`  Ratio1 (${absoluteDiff}/${totalWeight1}): ${ratio1.toFixed(4)}`);
         }
 
         if (totalWeight2 > 0) {
             const ratio2 = absoluteDiff / totalWeight2;
-            maxDiffRatio2 = Math.max(maxDiffRatio2, ratio2);
             console.log(`  Ratio2 (${absoluteDiff}/${totalWeight2}): ${ratio2.toFixed(4)}`);
         }
+
+        sumMaxDiff += Math.max(ratio1,ratio2);
     }
 
-    const maxRatio = Math.max(maxDiffRatio1, maxDiffRatio2);
-    console.log(`Max ratio: ${maxRatio.toFixed(4)}`);
-
     // Calculate final similarity: Similarity = 1 - maxRatio
-    const similarity = 1 - maxRatio;
+    const similarity = 1 - (sumMaxDiff / allPaths.size);
     console.log(`Similarity (per paper): ${similarity.toFixed(4)}`);
 
     // Ensure the result is between 0 and 1
