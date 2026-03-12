@@ -41,25 +41,21 @@ class GraphDistanceCalculator {
                 const weight2 = paths2[path] || 0;
                 const absoluteDiff = Math.abs(weight1 - weight2);
 
-                // Calculate ratios for normalization
+                // Calculate ratios for normalization, defaulting to 0
+                let ratio1 = 0;
+                let ratio2 = 0;
                 if (totalWeight1 > 0) {
-                    const ratio1 = absoluteDiff / totalWeight1;
-                } else {
-		        ratio1 = 0;
-		        }
-
+                    ratio1 = absoluteDiff / totalWeight1;
+                }
                 if (totalWeight2 > 0) {
-                    const ratio2 = absoluteDiff / totalWeight2;
-                } else {
-		        ratio2 = 0;
-		        }
+                    ratio2 = absoluteDiff / totalWeight2;
+                }
 
-		        sumMaxDiff += Math.max(ratio1,ratio2);
+                sumMaxDiff += Math.max(ratio1, ratio2);
             }
 
             //Calculate similarity
             const similarity = 1 - (sumMaxDiff / allPaths.size);
-
 
             // Ensure the result is between 0 and 1
             return Math.max(0, Math.min(1, similarity));
@@ -135,14 +131,16 @@ class GraphDistanceCalculator {
             const weight2 = paths2[path] || 0;
             const absoluteDiff = Math.abs(weight1 - weight2);
 
+            let ratio1 = 0;
+            let ratio2 = 0;
             if (totalWeight1 > 0) {
-                const ratio1 = absoluteDiff / totalWeight1;
+                ratio1 = absoluteDiff / totalWeight1;
             }
             if (totalWeight2 > 0) {
-                const ratio2 = absoluteDiff / totalWeight2;
+                ratio2 = absoluteDiff / totalWeight2;
             }
 
-            sumMaxDiff += Math.max(ratio1,ratio2);
+            sumMaxDiff += Math.max(ratio1, ratio2);
 
             differences.push({
                 path: path,

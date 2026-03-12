@@ -53,17 +53,24 @@ function calculateSimilarity(dfg1, dfg2) {
 
         console.log(`Path: ${path}, Weight1: ${weight1}, Weight2: ${weight2}, Diff: ${absoluteDiff}`);
 
+        // calculate ratios safely (default 0 if denominator is 0)
+        let ratio1 = 0;
+        let ratio2 = 0;
         if (totalWeight1 > 0) {
-            const ratio1 = absoluteDiff / totalWeight1;
+            ratio1 = absoluteDiff / totalWeight1;
             console.log(`  Ratio1 (${absoluteDiff}/${totalWeight1}): ${ratio1.toFixed(4)}`);
+        } else {
+            console.log(`  Ratio1 (no weight1): 0.0000`);
         }
 
         if (totalWeight2 > 0) {
-            const ratio2 = absoluteDiff / totalWeight2;
+            ratio2 = absoluteDiff / totalWeight2;
             console.log(`  Ratio2 (${absoluteDiff}/${totalWeight2}): ${ratio2.toFixed(4)}`);
+        } else {
+            console.log(`  Ratio2 (no weight2): 0.0000`);
         }
 
-        sumMaxDiff += Math.max(ratio1,ratio2);
+        sumMaxDiff += Math.max(ratio1, ratio2);
     }
 
     // Calculate final similarity: Similarity = 1 - maxRatio
